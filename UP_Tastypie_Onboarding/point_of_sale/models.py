@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Profile(models.Model):
+    """This is Profile model, it's creates a table to link user with its role (merchant/consumer)."""
     MERCHANT = 1
     CONSUMER = 2
 
@@ -17,7 +19,9 @@ class Profile(models.Model):
     def __str__(self):
         return self.name
 
+
 class Store(models.Model):
+    """Model for store."""
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
     lat = models.FloatField()
@@ -30,7 +34,9 @@ class Store(models.Model):
     class Meta:
         verbose_name_plural = 'Stores'
 
+
 class Item(models.Model):
+    """Model for item."""
     name = models.CharField(max_length=50)
     price = models.IntegerField()
     description = models.TextField()
@@ -42,7 +48,9 @@ class Item(models.Model):
     class Meta:
         verbose_name_plural = "Items"
 
+
 class Order(models.Model):
+    """Model for order (stores Transactional data)."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     merchant = models.ForeignKey(Profile, on_delete=models.CASCADE)
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
