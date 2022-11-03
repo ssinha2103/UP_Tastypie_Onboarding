@@ -15,6 +15,7 @@ v1_api = Api(api_name='v1')
 v1_api.register(UserResource())
 v1_api.register(ProfileResource())
 v1_api.register(StoreResource())
+v1_api.register(ItemResource())
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
