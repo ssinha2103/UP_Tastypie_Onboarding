@@ -7,6 +7,7 @@ from tastypie.authorization import Authorization
 
 
 class UserResource(ModelResource):
+    """Resource for User model (This model is DJANGO user model)."""
     class Meta:
         queryset = User.objects.all()
         resource_name = 'users'
@@ -17,6 +18,7 @@ class UserResource(ModelResource):
 
 
 class ProfileResource(ModelResource):
+    """Resource for Profile model ."""
     user = fields.ToOneField(UserResource, 'user', full=True)
 
     class Meta:
@@ -28,6 +30,7 @@ class ProfileResource(ModelResource):
 
 
 class StoreResource(ModelResource):
+    """Resource for Store model ."""
     merchant = fields.ToOneField('api.resources.ProfileResource', 'merchant', related_name='store_resource', full=True)
 
     class Meta:
