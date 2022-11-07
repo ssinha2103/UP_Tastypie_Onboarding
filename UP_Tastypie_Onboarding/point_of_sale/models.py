@@ -29,7 +29,7 @@ class Store(models.Model):
     merchant = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="stores")
 
     def __str__(self):
-        return self.name
+        return "{}: {}".format(self.name, self.address)
 
     class Meta:
         verbose_name_plural = 'Stores'

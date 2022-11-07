@@ -40,6 +40,32 @@ class MerchantItemAuthorization(Authorization, ABC):
             raise Unauthorized("No Access")
 
 
+class MerchantOrderResourceAuthorization(Authorization, ABC):
+    """Custom Authorization model for generating Merchant Order Authorization"""
+
+    def read_list(self, object_list, bundle):
+        """Overriding read_list method to filter out object_list based on user"""
+        profile = Profile.objects.get(user=bundle.request.user)
+        if profile.role == 1:
+            return object_list.filter(merchant__user=bundle.request.user)
+        else:
+            # raise Unauthorized("No Access")
+            return HttpResponse('Unauthorized', status=401)
+
+
+class ConsumerOrderResourceAuthorization(Authorization, ABC):
+    """Custom Authorization model for generating Consumer Order Authorization"""
+
+    def read_list(self, object_list, bundle):
+        """Overriding read_list method to filter out object_list based on user"""
+        profile = Profile.objects.get(user=bundle.request.user)
+        if profile.role == 2:
+            return object_list.filter(user=bundle.request.user)
+        else:
+            # raise Unauthorized("No Access")
+            return HttpResponse('Unauthorized', status=401)
+
+
 class PassAuthentication(Authentication):
     """Dummy Authentication class which allows some services to all users (logged-in/logged-out)"""
     def is_authenticated(self, request, **kwargs):

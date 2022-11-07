@@ -16,6 +16,8 @@ v1_api.register(UserResource())
 v1_api.register(ProfileResource())
 v1_api.register(StoreResource())
 v1_api.register(ItemResource())
+v1_api.register(CustomerOrderResource())
+v1_api.register(MerchantOrderResource())
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

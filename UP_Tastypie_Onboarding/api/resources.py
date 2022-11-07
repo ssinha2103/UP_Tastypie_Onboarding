@@ -24,7 +24,7 @@ class UserResource(ModelResource):
 
 class ProfileResource(ModelResource):
     """Resource for Profile model . Helps in fetching and creating new users + profiles"""
-    user = fields.ToOneField(UserResource, 'user', full=True)
+    user = fields.ToOneField(UserResource, 'user', full=False)
 
     class Meta:
         queryset = Profile.objects.all()
@@ -91,7 +91,7 @@ class ProfileResource(ModelResource):
 
 class StoreResource(ModelResource):
     """Resource for Store model . Helps in fetching and creating new Stores"""
-    merchant = fields.ToOneField('api.resources.ProfileResource', 'merchant', related_name='store_resource', full=True)
+    merchant = fields.ToOneField('api.resources.ProfileResource', 'merchant', related_name='store_resource', full=False)
 
     class Meta:
         authentication = BasicAuthentication()
@@ -107,7 +107,7 @@ class StoreResource(ModelResource):
 
 class ItemResource(ModelResource):
     """Resource for Item model. Helps in fetching and creating new Items."""
-    stores = fields.ToManyField('api.resources.StoreResource', 'stores', related_name='item_resource', full=True)
+    stores = fields.ToManyField('api.resources.StoreResource', 'stores', related_name='item_resource', full=False)
 
     class Meta:
         authentication = BasicAuthentication()
@@ -115,3 +115,35 @@ class ItemResource(ModelResource):
         queryset = Item.objects.all()
         resource_name = 'items'
         include_resource_uri = False
+
+
+class CustomerOrderResource(ModelResource):
+    user = fields.ForeignKey(UserResource, 'user', full=True)
+    merchant = fields.ForeignKey(ProfileResource, 'merchant', full=True)
+    store = fields.ForeignKey(StoreResource, 'store', full=True)
+    items = fields.ManyToManyField(ItemResource, 'items', full=True)
+
+    class Meta:
+        queryset = Order.objects.all()
+        resource_name = 'place_order'
+        authentication = BasicAuthentication()
+        authorization = ConsumerOrderResourceAuthorization()
+        include_resource_uri = False
+
+    def get_object_list(self, request):
+        return super(CustomerOrderResource, self).get_object_list(request).filter(user=request.user)
+
+
+class MerchantOrderResource(ModelResource):
+    items = fields.ToManyField(ItemResource, 'items', full=True)
+    class Meta:
+        queryset = Order.objects.all()
+        resource_name = 'see_order'
+        authentication = BasicAuthentication()
+        authorization = MerchantOrderResourceAuthorization()
+        include_resource_uri = False
+
+    def get_object_list(self, request):
+        print(request.user)
+        print(Profile.objects.get(user=request.user).role)
+        return super(MerchantOrderResource, self).get_object_list(request).filter(merchant__user=request.user)
