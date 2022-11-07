@@ -60,7 +60,7 @@ class ConsumerOrderResourceAuthorization(Authorization, ABC):
         """Overriding read_list method to filter out object_list based on user"""
         profile = Profile.objects.get(user=bundle.request.user)
         if profile.role == 2:
-            return object_list.filter(user=bundle.request.user)
+            return object_list.filter()
         else:
             # raise Unauthorized("No Access")
             return HttpResponse('Unauthorized', status=401)

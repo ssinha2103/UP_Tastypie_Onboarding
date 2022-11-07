@@ -105,7 +105,11 @@ class StoreResource(ModelResource):
 
     def get_object_list(self, request):
         """Overrides the get_object_list method of ModelResource"""
-        return super(StoreResource, self).get_object_list(request).filter(merchant__user=request.user)
+        profile = Profile.objects.get(user=request.user)
+        if profile.role == 1:
+            return super(StoreResource, self).get_object_list(request).filter(merchant__user=request.user)
+        else:
+            return super(StoreResource, self).get_object_list(request).filter()
 
 
 class ItemResource(ModelResource):
@@ -119,13 +123,21 @@ class ItemResource(ModelResource):
         resource_name = 'items'
         include_resource_uri = False
 
+    def get_object_list(self, request):
+        """Overrides the get_object_list method of ModelResource"""
+        profile = Profile.objects.get(user=request.user)
+        if profile.role == 1:
+            return super(ItemResource, self).get_object_list(request).filter(stores__merchant=profile)
+        else:
+            return super(ItemResource, self).get_object_list(request).filter()
+
 
 class CustomerOrderResource(ModelResource):
     """Resource for Order model. Helps in creating new Orders for Customers."""
-    user = fields.ForeignKey(UserResource, 'user', full=True)
-    merchant = fields.ForeignKey(ProfileResource, 'merchant', full=True)
-    store = fields.ForeignKey(StoreResource, 'store', full=True)
-    items = fields.ManyToManyField(ItemResource, 'items', full=True)
+    user = fields.ForeignKey(UserResource, 'user', full=False)
+    merchant = fields.ForeignKey(ProfileResource, 'merchant', full=False)
+    store = fields.ForeignKey(StoreResource, 'store', full=False)
+    items = fields.ManyToManyField(ItemResource, 'items', full=False)
 
     class Meta:
         queryset = Order.objects.all()
