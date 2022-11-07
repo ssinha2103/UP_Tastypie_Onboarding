@@ -47,12 +47,14 @@ class ProfileResource(ModelResource):
         return profile
 
     def prepend_urls(self):
+        """Appending urls after profile resource for login and logout."""
         return [
             url(r"^user/login/$", self.wrap_view('login'), name="api_login"),
             url(r"^user/logout/$", self.wrap_view('logout'), name='api_logout'),
         ]
 
     def login(self, request, **kwargs):
+        """Login function for the profile resource"""
         self.method_check(request, allowed=['post'])
 
         data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
@@ -81,6 +83,7 @@ class ProfileResource(ModelResource):
             }, HttpUnauthorized)
 
     def logout(self, request, **kwargs):
+        """Logout function for the profile resource"""
         self.method_check(request, allowed=['get'])
         if request.user and request.user.is_authenticated:
             logout(request)
@@ -118,6 +121,7 @@ class ItemResource(ModelResource):
 
 
 class CustomerOrderResource(ModelResource):
+    """Resource for Order model. Helps in creating new Orders for Customers."""
     user = fields.ForeignKey(UserResource, 'user', full=True)
     merchant = fields.ForeignKey(ProfileResource, 'merchant', full=True)
     store = fields.ForeignKey(StoreResource, 'store', full=True)
@@ -131,10 +135,12 @@ class CustomerOrderResource(ModelResource):
         include_resource_uri = False
 
     def get_object_list(self, request):
+        """Overrides the get_object_list method of ModelResource"""
         return super(CustomerOrderResource, self).get_object_list(request).filter(user=request.user)
 
 
 class MerchantOrderResource(ModelResource):
+    """Resource for Order model. Helps in viewing Orders from Customers to merchants."""
     items = fields.ToManyField(ItemResource, 'items', full=True)
     class Meta:
         queryset = Order.objects.all()
@@ -144,6 +150,7 @@ class MerchantOrderResource(ModelResource):
         include_resource_uri = False
 
     def get_object_list(self, request):
+        """Overrides the get_object_list method of ModelResource"""
         print(request.user)
         print(Profile.objects.get(user=request.user).role)
         return super(MerchantOrderResource, self).get_object_list(request).filter(merchant__user=request.user)
