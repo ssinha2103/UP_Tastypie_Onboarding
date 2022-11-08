@@ -1,6 +1,4 @@
 import pytest
-# from point_of_sale.models import Item, Store, Order
-# from django.contrib.auth import get_user_model
 from tastypie.test import TestApiClient as ApiClient
 import pdb
 from .confest import *
@@ -10,9 +8,9 @@ client = ApiClient()
 User = get_user_model()
 
 
-# Merchant Login & Registration Test Case
 @pytest.mark.django_db
-def test_merchant_registration():  # passed
+def test_merchant_registration():
+    """Merchant Registration Test Case"""
     # import pdb; pdb.set_trace()
     payload = {
         'name': 'Merchant',
@@ -29,6 +27,7 @@ def test_merchant_registration():  # passed
 
 @pytest.mark.django_db
 def test_merchant_login(merchant_data):
+    """Merchant Login Test Case"""
     # pdb.set_trace()
     payload = {
         "username": "merchant",
@@ -41,6 +40,7 @@ def test_merchant_login(merchant_data):
 # Stores Creation EndPoint Test Case
 @pytest.mark.django_db
 def test_store_creation_api_endpoint(merchant_data):
+    """Store Creation Test Case"""
     # import pdb; pdb.set_trace()
     payload = {
         "name": "WhiteField Outlet",
@@ -57,6 +57,7 @@ def test_store_creation_api_endpoint(merchant_data):
 # Items Creation Endpoint Test Case
 @pytest.mark.django_db
 def test_item_creation_api_endpoint(store_data):
+    """Item Creation Test Case"""
     # import pdb; pdb.set_trace()
     payload = {
         "name": "Dosa",
@@ -71,7 +72,8 @@ def test_item_creation_api_endpoint(store_data):
 
 # consumer Login & Registration Test Case
 @pytest.mark.django_db
-def test_consumer_registration():  # passed
+def test_consumer_registration():
+    """Consumer Registration Test Case"""
     payload = payload = {
         'name': 'Consumer',
         'role': 1,
@@ -87,6 +89,7 @@ def test_consumer_registration():  # passed
 
 @pytest.mark.django_db
 def test_consumer_login(consumer_data):
+    """Consumer Login Test Case"""
     payload = {
         "username": "consumer",
         "password": "consumer"
@@ -95,9 +98,9 @@ def test_consumer_login(consumer_data):
     assert response.status_code == 200
 
 
-# Test Place Order Endpoints
 @pytest.mark.django_db
 def test_place_order_api_endpoints(merchant_data, store_data, item_data, consumer_data):
+    """Test Place Order Endpoints"""
     # import pdb; pdb.set_trace()
     payload = {
         "user": "/api/v1/users/2/",

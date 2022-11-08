@@ -7,6 +7,7 @@ User = get_user_model()
 
 @pytest.fixture
 def merchant_data():
+    """Pytest Fixture for Merchant Data"""
     merchant = User.objects.create_user(username="merchant", email="merchant@gmail.com", password="merchant")
     profile = Profile.objects.create(user=merchant, name="Merchant_User", role=1)
     return profile
@@ -14,6 +15,7 @@ def merchant_data():
 
 @pytest.fixture
 def consumer_data():
+    """Pytest Fixture for Consumer Data"""
     consumer = User.objects.create_user(username="consumer", email="consumer@gmail.com", password="consumer")
     profile = Profile.objects.create(user=consumer, name="consumer_User", role=2)
     return profile
@@ -21,12 +23,14 @@ def consumer_data():
 
 @pytest.fixture
 def store_data(merchant_data):
+    """Pytest Fixture for Store Data"""
     store = Store.objects.create(name="WhiteField Outlet", address="WhiteField", lat=13, lng=13, merchant=merchant_data)
     return store
 
 
 @pytest.fixture
 def item_data(store_data):
+    """Pytest Fixture for Item Data"""
     item = Item.objects.create(name="Dosa", price=120, description="Sambhar Dosa", stores=['/api/v1/stores/1/'])
     return item
 
