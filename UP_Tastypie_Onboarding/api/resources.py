@@ -2,7 +2,7 @@ from point_of_sale.models import *
 from tastypie import fields
 from django.contrib.auth.models import User
 from tastypie.resources import ModelResource
-from tastypie.authentication import BasicAuthentication, Authentication
+from tastypie.authentication import BasicAuthentication, Authentication, ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from point_of_sale.permissions import *
 from django.contrib.auth import authenticate, login, logout
@@ -25,6 +25,8 @@ class UserResource(ModelResource):
 class ProfileResource(ModelResource):
     """Resource for Profile model . Helps in fetching and creating new users + profiles"""
     user = fields.ToOneField(UserResource, 'user', full=False)
+    def __get_api_key_for_user(self, user):
+        return '%s' % (user.api_key.key)
 
     class Meta:
         queryset = Profile.objects.all()
@@ -54,21 +56,21 @@ class ProfileResource(ModelResource):
         ]
 
     def login(self, request, **kwargs):
-        """Login function for the profile resource"""
+        """
+        Function for providing the login api endpoint.
+        """
         self.method_check(request, allowed=['post'])
 
-        data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
-
-        username = data.get('username', '')
-        password = data.get('password', '')
-        print(username)
-        print(password)
+        data = self.deserialize(request, request.body, format=request.META.get(
+            'CONTENT_TYPE', 'application/json'))
+        username = data.pop('username')
+        password = data.pop('password')
         user = authenticate(username=username, password=password)
-        print(user)
         if user:
             if user.is_active:
                 login(request, user)
                 return self.create_response(request, {
+                    'api_key': self.__get_api_key_for_user(user),
                     'success': True
                 })
             else:
