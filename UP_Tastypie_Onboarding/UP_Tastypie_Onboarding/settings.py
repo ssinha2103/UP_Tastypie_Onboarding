@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tastypie',
     'point_of_sale.apps.PointOfSaleConfig',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
